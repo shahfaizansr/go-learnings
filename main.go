@@ -18,5 +18,4 @@ func main() {
 	router.POST("/getall", service.GetAllService)
 	router.GET("/post/:id", service.GetService)
 	router.Run()
-
 }
