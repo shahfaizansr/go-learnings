@@ -1,0 +1,82 @@
+{
+	"app_server_port": "3333",
+	"service_1_url": "http://localhost:8080/",
+	"service_2_url": "http://localhost:8081/",
+	"etcd_endpoint":["http://localhost:2379"],
+	"redis": {
+		"address": "localhost:6379",
+		"password": "",
+		"db": 0
+	},
+	"minio_info": {
+		"url": "localhost:9000",
+		"access_key": "Eud9gxDRrKS5rqf7hkEO",
+		"secret_key": "9SX9LKrfjC1L64YzZ3xl34STUaIkc7OKkPJAlgLK",
+		"api": "s3v4",
+		"path": "auto",
+		"use_ssl": false,
+		"buckets": [
+			{
+				"entity_type": "rta-kfin",
+				"name": "rta-kfin"
+			}
+		]
+	},
+	"kafka_config": {
+		"is_kafka_on": true,
+		"kafka_broker": ["kafka:9094"],
+		"kafka_topic": "cvl-kra-logs"
+	},
+	"timeout_request_retry_count": 5,
+	"timeout_request_retry_interval_in_ms": 1000,
+	"rigel": {
+		"app_name": "CVL-KRA",
+		"module_name": "KRA",
+		"version_number": 1,
+		"config_name": "dev"
+	},
+	"metrics": [
+		{
+			"name": "system_uptime_seconds",
+			"type": "gauge",
+			"help": "The total system uptime in seconds."
+		},
+		{
+			"name": "http_request_duration_seconds",
+			"type": "histogram",
+			"labels": [
+				"name",
+				"status",
+				"when"
+			],
+			"buckets": [
+				0.001,
+				0.01,
+				0.1,
+				0.5,
+				1,
+				5,
+				10
+			],
+			"help": "The duration of HTTP requests in seconds."
+		},
+		{
+			"name": "sql_query_duration_seconds",
+			"type": "histogram",
+			"description": "The duration of executing sql query in seconds.",
+			"labels": [
+				"name",
+				"status",
+				"when"
+			],
+			"buckets": [
+				0.1,
+				0.5,
+				1,
+				2.5,
+				5,
+				10
+			]
+		}
+	]
+}

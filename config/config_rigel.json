@@ -1,0 +1,118 @@
+{
+	"fields": [
+		{
+			"name": "db_host",
+			"type": "string",
+			"description": "Specifies the host address of the database server"
+		},
+		{
+			"name": "db_port",
+			"type": "int",
+			"description": "Defines the port number on which the database server is running.",
+			"constraints": {
+				"min": 1000,
+				"max": 6000
+			}
+		},
+		{
+			"name": "db_user",
+			"type": "string",
+			"description": "Represents the username used to authenticate and access the database."
+		},
+		{
+			"name": "db_password",
+			"type": "string",
+			"description": "Stores the password required for database authentication."
+		},
+		{
+			"name": "db_name",
+			"type": "string",
+			"description": "Specifies the name of the database to be connected to."
+		},
+		{
+			"name": "app_server_port",
+			"type": "int",
+			"description": "Specifies the port on which the application server will listen for incoming requests.",
+			"constraints": {
+				"min": 8000,
+				"max": 8999
+			}
+		},
+		{
+			"name": "logger_priority",
+			"type": "string",
+			"description": "defines the priority of logger"
+		},
+		{
+			"name": "CALC.OUT.PRECISION",
+			"type": "string",
+			"description": "decides the number of decimal places to be used in the final response after performing a supported operation."
+		},
+		{
+			"name": "minio_info/url",
+			"type": "string",
+			"description": "URL for Minio"
+		},
+		{
+			"name": "minio_info/access_key",
+			"type": "string",
+			"description": "Access key for Minio"
+		},
+		{
+			"name": "minio_info/secret_key",
+			"type": "string",
+			"description": "Secret key for Minio"
+		},
+		{
+			"name": "minio_info/api",
+			"type": "string",
+			"description": "API endpoint for Minio"
+		},
+		{
+			"name": "minio_info/path",
+			"type": "string",
+			"description": "Path for Minio storage"
+		},
+		{
+			"name": "minio_info/use_ssl",
+			"type": "bool",
+			"description": "Whether to use SSL for Minio"
+		},
+		{
+			"name": "minio_info/buckets/entity_type",
+			"type": "string",
+			"description": "Entity type for Minio bucket"
+		},
+		{
+			"name": "minio_info/buckets/name",
+			"type": "string",
+			"description": "Name of the Minio bucket"
+		},
+		{
+			"name": "mockoon_panvalid",
+			"type": "string",
+			"description": "Pan Validation Response"
+		},
+		{
+			"name": "mockoon_getpassword",
+			"type": "string",
+			"description": "Get Password Response"
+		},
+		{
+			"name": "mockoon_pandownload_I",
+			"type": "string",
+			"description": "Pan Download Response for Individual"
+		},
+		{
+			"name": "mockoon_pandownload_NI",
+			"type": "string",
+			"description": "Pan Download Response for Non-Individual"
+		},
+		{
+			"name": "mockoon_pandataupload",
+			"type": "string",
+			"description": "Pan Data Upload Response"
+		}
+	],
+	"description": "CVL KRA config"
+}
