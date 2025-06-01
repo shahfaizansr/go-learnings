@@ -4,7 +4,7 @@ This repository contains my hands-on journey of learning the Go (Golang) program
 
 - Basic syntax, structs, slices, maps
 - REST APIs using the Gin framework
-- PostgreSQL database connectivity
+- SQL database connectivity
 - Error handling and logging
 - Unit testing using Go's `testing` package
 
