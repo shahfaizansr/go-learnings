@@ -111,9 +111,6 @@ func main() {
 	l.LogActivity("Connection with database established", connURL)
 
 	router := gin.Default()
-	// router.POST("/add", services.)
-	// router.POST("/getall", services.GetAllService)
-	// router.GET("/post/:id", services.GetService)
 
 	myHelloService := service.NewService(router).
 		WithLogHarbour(l)

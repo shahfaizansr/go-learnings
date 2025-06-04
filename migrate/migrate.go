@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/shahfaizansr/initilizer"
-	"github.com/shahfaizansr/models"
 )
 
 func init() {
@@ -10,8 +9,8 @@ func init() {
 	initilizer.LoadEnvFile()
 }
 
-func main() {
+// func main() {
 
-	// Migrate the schema
-	initilizer.DB.AutoMigrate(&models.Post{})
-}
+// 	// Migrate the schema
+// 	initilizer.DB.AutoMigrate(&models.Post{})
+// }

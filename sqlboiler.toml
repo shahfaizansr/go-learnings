@@ -1,0 +1,14 @@
+[mssql]
+  user = "sa"
+  pass = "SQLServer123"
+  host = "localhost"
+  port = 1433
+  dbname = "CVL_KRA_GORM"
+  sslmode = "disable"
+  blacklist = ["schema_migrations"]
+  schema = "dbo"
+  tag = "db"
+
+[output]
+  pkgname = "models"
+  out_folder = "models"

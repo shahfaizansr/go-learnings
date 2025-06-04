@@ -18,6 +18,10 @@ type CalcResponseModel struct {
 	DurationMs   float64   `gorm:"column:duration_ms"`
 }
 
+func (CalcResponseModel) TableName() string {
+	return "my_calculation_logs"
+}
+
 type CalcResponse struct {
 	Result []float64 `json:"result"`
 	Error  string    `json:"error,omitempty"`

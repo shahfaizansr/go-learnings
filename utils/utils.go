@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,7 +9,6 @@ import (
 	"sort"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/remiges-tech/alya/config"
 	"github.com/remiges-tech/alya/service"
 	"github.com/remiges-tech/logharbour/logharbour"
@@ -60,45 +60,160 @@ func GetCurrentLoggerPriority(loggerPriority string) logharbour.LogPriority {
 	return currentPriority
 }
 
+// func StoreCalcLogToDB(
+// 	ctx *gin.Context,
+// 	srv *service.Service,
+// 	request mycalc.CalcRequestModel,
+// 	response mycalc.CalcResponse,
+// 	requestTime, responseTime time.Time,
+// 	duration float64,
+// ) {
+// 	inputJSON, err := json.Marshal(request.Input)
+// 	if err != nil {
+// 		srv.LogHarbour.WithModule("MYCALC").WithOp("StoreCalcLogToDB").Err().Log("Failed to marshal input: " + err.Error())
+// 		return
+// 	}
+
+// 	resultJSON, err := json.Marshal(response.Result)
+// 	if err != nil {
+// 		srv.LogHarbour.WithModule("MYCALC").WithOp("StoreCalcLogToDB").Err().Log("Failed to marshal result: " + err.Error())
+// 		return
+// 	}
+
+// 	log := mycalc.CalcResponseModel{
+// 		Input:        string(inputJSON),
+// 		Operation:    request.Operation,
+// 		Result:       string(resultJSON),
+// 		Error:        response.Error,
+// 		RequestTime:  requestTime,
+// 		ResponseTime: responseTime,
+// 		DurationMs:   duration,
+// 	}
+
+// 	dbHandler, ok := srv.Database.(*sqldb.DBHandler)
+// 	if !ok {
+// 		srv.LogHarbour.WithModule("MYCALC").WithOp("StoreCalcLogToDB").Err().Log("Invalid database handler type in srv.Database")
+// 		return
+// 	}
+
+// 	if err := dbHandler.DB.Create(&log).Error; err != nil {
+// 		srv.LogHarbour.WithModule("MYCALC").WithOp("StoreCalcLogToDB").Err().Log("DB insert failed: " + err.Error())
+// 	}
+// }
+
+type CalcLog struct {
+	ID           uint `gorm:"primaryKey"`
+	RequestTime  time.Time
+	ResponseTime time.Time
+	DurationMs   float64
+	RequestData  string
+	ResponseData string
+}
+
+// func StoreCalcLogToDB(
+// 	ctx context.Context,
+// 	srv *service.Service,
+// 	request mycalc.CalcRequestModel,
+// 	response mycalc.CalcResponse,
+// 	requestTime, responseTime time.Time,
+// 	durationMs float64,
+// ) {
+// 	dbHandler, ok := srv.Database.(*sqldb.DBHandler)
+// 	if !ok {
+// 		srv.LogHarbour.Err().Log("Failed to assert *sqldb.DBHandler")
+// 		return
+// 	}
+
+// 	reqJSON, err := json.Marshal(request)
+// 	if err != nil {
+// 		srv.LogHarbour.Err().Log("Request marshal error:")
+// 		return
+// 	}
+
+// 	resJSON, err := json.Marshal(response)
+// 	if err != nil {
+// 		srv.LogHarbour.Err().Log("Response marshal error:")
+// 		return
+// 	}
+
+// 	logEntry := mycalc.CalcResponseModel{
+// 		RequestTime:  requestTime,
+// 		ResponseTime: responseTime,
+// 		DurationMs:   durationMs,
+// 		Input:        string(reqJSON),
+// 		Result:       string(resJSON),
+// 		Operation:    request.Operation,
+// 		Error:        response.Error,
+// 	}
+
+// 	fmt.Print("llllllllll")
+
+// 	if err := dbHandler.DB.WithContext(ctx).Create(&logEntry).Error; err != nil {
+// 		srv.LogHarbour.Err().Log("Failed to insert log into DB:")
+// 	}
+// }
+
 func StoreCalcLogToDB(
-	ctx *gin.Context,
+	ctx context.Context,
 	srv *service.Service,
 	request mycalc.CalcRequestModel,
 	response mycalc.CalcResponse,
 	requestTime, responseTime time.Time,
-	duration float64,
+	durationMs float64,
 ) {
-	inputJSON, err := json.Marshal(request.Input)
-	if err != nil {
-		srv.LogHarbour.WithModule("MYCALC").WithOp("StoreCalcLogToDB").Err().Log("Failed to marshal input: " + err.Error())
-		return
-	}
-
-	resultJSON, err := json.Marshal(response.Result)
-	if err != nil {
-		srv.LogHarbour.WithModule("MYCALC").WithOp("StoreCalcLogToDB").Err().Log("Failed to marshal result: " + err.Error())
-		return
-	}
-
-	log := mycalc.CalcResponseModel{
-		Input:        string(inputJSON),
-		Operation:    request.Operation,
-		Result:       string(resultJSON),
-		Error:        response.Error,
-		RequestTime:  requestTime,
-		ResponseTime: responseTime,
-		DurationMs:   duration,
-	}
-
 	dbHandler, ok := srv.Database.(*sqldb.DBHandler)
 	if !ok {
-		srv.LogHarbour.WithModule("MYCALC").WithOp("StoreCalcLogToDB").Err().Log("Invalid database handler type in srv.Database")
+		srv.LogHarbour.Err().Log("Failed to assert *sqldb.DBHandler")
 		return
 	}
 
-	if err := dbHandler.DB.Create(&log).Error; err != nil {
-		srv.LogHarbour.WithModule("MYCALC").WithOp("StoreCalcLogToDB").Err().Log("DB insert failed: " + err.Error())
+	reqJSON, err := json.Marshal(request)
+	if err != nil {
+		srv.LogHarbour.Err().Log("Request marshal error:")
+		return
 	}
+
+	resJSON, err := json.Marshal(response)
+	if err != nil {
+		srv.LogHarbour.Err().Log("Response marshal error:")
+		return
+	}
+
+	query := `
+INSERT INTO my_calculation_logs (
+	request_time,
+	response_time,
+	duration_ms,
+	request_data,
+	response_data,
+	error
+) VALUES (
+	:request_time,
+	:response_time,
+	:duration_ms,
+	:request_data,
+	:response_data,
+	:error
+)
+`
+
+	params := map[string]interface{}{
+		"request_time":  requestTime,
+		"response_time": responseTime,
+		"duration_ms":   durationMs,
+		"request_data":  string(reqJSON),
+		"response_data": string(resJSON),
+		"error":         response.Error,
+	}
+
+	_, err = dbHandler.DB.NamedExecContext(ctx, query, params)
+	if err != nil {
+		srv.LogHarbour.Err().LogActivity("Failed to insert log into DB:", err.Error())
+		fmt.Println("getting error", err.Error())
+		return
+	}
+
+	srv.LogHarbour.Info().Log("✅ Log entry inserted successfully.")
 }
 
 func ArithmeticCalculation(req mycalc.CalcRequestModel, srv *service.Service) (mycalc.CalcResponse, error) {
