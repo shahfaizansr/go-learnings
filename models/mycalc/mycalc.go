@@ -7,22 +7,22 @@ type CalcRequestModel struct {
 	Operation string    `json:"op" validate:"required"`
 }
 
-type CalcResponseModel struct {
-	ID           uint      `gorm:"primaryKey"`
-	Input        string    `gorm:"type:text"` // JSON input
-	Operation    string    `gorm:"type:varchar(50)"`
-	Result       string    `gorm:"type:text"` // JSON result
-	Error        string    `gorm:"type:text"`
-	RequestTime  time.Time `gorm:"column:request_time"`
-	ResponseTime time.Time `gorm:"column:response_time"`
-	DurationMs   float64   `gorm:"column:duration_ms"`
-}
-
-func (CalcResponseModel) TableName() string {
-	return "my_calculation_logs"
-}
-
 type CalcResponse struct {
 	Result []float64 `json:"result"`
 	Error  string    `json:"error,omitempty"`
+}
+type CalcResponseBUlk struct {
+	Result string `json:"result"`
+	Error  string `json:"error,omitempty"`
+}
+
+type CalcLogEntry struct {
+	RequestTime  time.Time `db:"request_time"`
+	ResponseTime time.Time `db:"response_time"`
+	DurationMs   float64   `db:"duration_ms"`
+	RequestData  string    `db:"request_data"`
+	ResponseData string    `db:"response_data"`
+	Error        string    `db:"error"`
+	Operation    string    `db:"operation"`
+	Input        string    `db:"input"`
 }

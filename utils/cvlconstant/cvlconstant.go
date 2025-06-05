@@ -86,6 +86,7 @@ const (
 	INVALID_CSV                         = "invalid base64 CSV"
 	INPUTFILE                           = "inputfile"
 	INVALID_INPUT_DOBATCH               = "invalid input in DoBatchJob"
+	FAILED_DECODE_CSV                   = "Failed to decode base64 input:"
 	BULK_OPERATION                      = "bulk_operation"
 	EMP_REGEX_EXP                       = `^[A-Za-z]-\d{1,5}$`
 	NAME_REGEX_EXP                      = `^[A-Za-z]+(?:'[A-Za-z]+)?(?: [A-Za-z]+(?:'[A-Za-z]+)?)*$`
@@ -218,4 +219,9 @@ const (
 const (
 	MIN_SALARY = 0
 	MAX_SALARY = 1000000000
+)
+
+// env constant
+const (
+	CALC_LOG_INSERT_QUERY = "CALC_LOG_INSERT_QUERY"
 )

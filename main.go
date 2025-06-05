@@ -14,6 +14,7 @@ import (
 	"github.com/shahfaizansr/initilizer"
 	sqldb "github.com/shahfaizansr/migrate/db"
 	"github.com/shahfaizansr/models"
+	"github.com/shahfaizansr/services/mybulkcalcservice"
 	"github.com/shahfaizansr/services/mycalcservice"
 	"github.com/shahfaizansr/services/myhelloservice"
 	"github.com/shahfaizansr/utils"
@@ -110,6 +111,44 @@ func main() {
 	}
 	l.LogActivity("Connection with database established", connURL)
 
+	// redis setup
+	l.Log("Establishing the connection with Redis")
+	// redisClient := redis_utils.NewRedisClient(ctx, l, appConfig)
+	// l.Log("Connection with redis established")
+
+	// // MinIO Setup
+	// l.Log("Establishing the connection with Minio")
+
+	// minioClientModel, err := minio_utils.BuildMinIOSetup(ctx, appConfig.MinIOInfo)
+	// if err != nil {
+	// 	l.Err().Error(err).Log("Failed to initialise MinIO Setup")
+	// 	log.Fatalln("Failed to initialise MinIO Setup", err)
+	// 	return
+	// }
+	// l.Log("Connection with minio established")
+
+	// jm := jobs.NewJobManager(dbconnn, redis_utils.GetRedisClient(), minio_utils.GetMinioClient(), l, &jobs.JobManagerConfig{
+	// 	BatchStatusCacheDurSec: 0,
+	// 	BatchOutputBucket:      "cvlkra",
+	// })
+
+	// // Register the custom initializer for batch type "mybulkcalc".
+	// err = jm.RegisterInitializer(cvlconstant.MyBulkCalc.String(), &mybatch.MyCalcInitializer{})
+	// if err != nil {
+	// 	l.Err().Error(err).Log("Failed to register initializer")
+	// 	log.Fatal("Failed to register initializer:", err)
+	// 	return
+	// }
+
+	// // Register the processor that will be used to handle each input line for batch type "mybulkcalc" and process name "bulk_operation".
+	// err = jm.RegisterProcessorBatch(cvlconstant.MyBulkCalc.String(), cvlconstant.BULK_OPERATION, &mybatch.MyBulkCalcBathProcessor{})
+	// if err != nil {
+	// 	l.Err().Error(err).Log("Failed to register process batch")
+	// 	log.Fatal("Failed to register process batch: ", err)
+	// }
+
+	// go jm.Run()
+
 	router := gin.Default()
 
 	myHelloService := service.NewService(router).
@@ -120,6 +159,22 @@ func main() {
 		WithLogHarbour(l).
 		WithDatabase(dbconnn)
 	myCalcService.RegisterRoute(cvlconstant.POST_METHOD, cvlconstant.FORWARD_SLASH+cvlconstant.MyCalc.String(), mycalcservice.CalculatorHandler)
+
+	myBulkCalcService := service.NewService(router).
+		WithLogHarbour(l).
+		WithDatabase(dbconnn)
+	myBulkCalcService.RegisterRoute(cvlconstant.POST_METHOD, cvlconstant.FORWARD_SLASH+cvlconstant.MyBulkCalc.String(), mybulkcalcservice.HandleMyBulkCalc)
+
+	// myBatchService := service.NewService(router).
+	// 	WithLogHarbour(l).
+	// 	WithDatabase(dbconnn).
+	// 	WithDependency("redisClient", redisClient).
+	// 	WithDependency("minio", minioClientModel).
+	// 	WithDependency("logger", l).
+	// 	WithDependency("appConfig", appConfig).
+	// 	WithRigelConfig(rigelClient)
+	// 	// WithDependency("jobmanager", jm)
+	// myBatchService.RegisterRoute(cvlconstant.POST_METHOD, cvlconstant.FORWARD_SLASH+cvlconstant.MyBulkCalcBatch.String(), mybatchservice.HandleMyBulkCalcBatch)
 
 	wscutils.SetMsgIDInvalidJSON(1001)
 	wscutils.SetErrCodeInvalidJSON(cvlconstant.INVALID_JSON_FORMAT)

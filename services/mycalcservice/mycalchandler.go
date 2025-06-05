@@ -18,11 +18,12 @@ func CalculatorHandler(ctx *gin.Context, srv *service.Service) {
 	logger.Info().Log("Calculator request received")
 
 	var (
-		request      mycalc.CalcRequestModel
-		requestTime  = time.Now()
-		responseTime time.Time
-		duration     float64
-		calcResult   mycalc.CalcResponse
+		request          mycalc.CalcRequestModel
+		requestTime      = time.Now()
+		responseTime     time.Time
+		duration         float64
+		validationErrors []wscutils.ErrorMessage
+		calcResult       mycalc.CalcResponse
 	)
 
 	// Parse request
@@ -39,30 +40,11 @@ func CalculatorHandler(ctx *gin.Context, srv *service.Service) {
 		return
 	}
 
-	// Validate input
-	var validationErrors []wscutils.ErrorMessage
-	if len(request.Input) == 0 {
-		validationErrors = append(validationErrors, wscutils.BuildErrorMessage(
-			cvlconstant.EMPTY_MESSAGE_ID,
-			cvlconstant.ERRORCODE_EMPTY,
-			cvlconstant.INPUT,
-			cvlconstant.INPUT,
-		))
-	}
-	if request.Operation == "" {
-		validationErrors = append(validationErrors, wscutils.BuildErrorMessage(
-			cvlconstant.EMPTY_MESSAGE_ID,
-			cvlconstant.ERRORCODE_EMPTY,
-			cvlconstant.OPERATION,
-			cvlconstant.OPERATION,
-		))
-	}
-
+	validationErrors = utils.ValidateMyCalcRequest(request)
 	if len(validationErrors) > 0 {
 		responseTime = time.Now()
 		duration = responseTime.Sub(requestTime).Seconds() * 1000
 
-		// Convert validation errors to JSON string for storage
 		errorBytes, err := json.Marshal(validationErrors)
 		errorMsg := string(errorBytes)
 		if err != nil {
